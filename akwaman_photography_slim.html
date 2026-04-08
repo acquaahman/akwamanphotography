@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Akwaman Photography</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+CiAgPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTIiIGZpbGw9IiMwRDFCMkEiLz4KICA8dGV4dCB4PSIzMiIgeT0iNDQiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZvbnQtc2l6ZT0iMjgiIAogICAgICAgIGZpbGw9IiM1QkIzRDQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGxldHRlci1zcGFjaW5nPSIxIj5BSzwvdGV4dD4KPC9zdmc+">
+<link href="https://fonts.googleapis.com/css2?family=Viga&family=Roboto:wght@100;300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --black:#080808;--dark:#111;
+  --teal:#1A6B8A;--light-teal:#5BB3D4;
+  --white:#fff;--gray:#888;
+  --font-display:'Viga',sans-serif;
+  --font-body:'Roboto',sans-serif;
+}
+html{scroll-behavior:smooth;}
+body{background:var(--black);color:var(--white);font-family:var(--font-body);overflow-x:hidden;}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:20px 40px;background:linear-gradient(to bottom,rgba(0,0,0,0.7),transparent);transition:background 0.3s;}
+nav.scrolled{background:rgba(8,8,8,0.95);backdrop-filter:blur(10px);}
+.nav-logo img{width:50px;height:50px;border-radius:50%;object-fit:cover;opacity:0.9;}
+.nav-links{display:flex;gap:36px;list-style:none;}
+.nav-links a{font-family:var(--font-display);font-size:13px;letter-spacing:0.18em;color:rgba(255,255,255,0.85);text-decoration:none;text-transform:uppercase;transition:color 0.2s;}
+.nav-links a:hover{color:var(--light-teal);}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;}
+.hamburger span{width:24px;height:2px;background:var(--white);display:block;}
+
+.hero{position:relative;width:100%;height:100vh;overflow:hidden;}
+.slide{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1.4s ease-in-out;}
+.slide.active{opacity:1;}
+.slide::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.35) 0%,rgba(0,0,0,0.05) 50%,rgba(0,0,0,0.6) 100%);}
+.hero-text{position:absolute;bottom:80px;left:50%;transform:translateX(-50%);text-align:center;z-index:2;white-space:nowrap;}
+.hero-text h1{font-family:'Roboto',sans-serif;font-weight:100;font-size:clamp(22px,4.5vw,48px);letter-spacing:0.35em;text-transform:uppercase;color:var(--white);text-shadow:0 2px 24px rgba(0,0,0,0.4);}
+.hero-text p{font-family:var(--font-body);font-weight:300;font-size:12px;letter-spacing:0.25em;color:rgba(255,255,255,0.65);margin-top:8px;text-transform:uppercase;}
+.slide-dots{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);display:flex;gap:10px;z-index:2;}
+.dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.3);cursor:pointer;transition:background 0.3s,transform 0.3s;}
+.dot.active{background:var(--white);transform:scale(1.3);}
+
+.section{padding:80px 40px;max-width:1200px;margin:0 auto;}
+.section-label{font-family:var(--font-body);font-size:10px;font-weight:500;letter-spacing:0.3em;text-transform:uppercase;color:var(--teal);margin-bottom:10px;}
+.section-title{font-family:var(--font-display);font-size:clamp(26px,4vw,42px);letter-spacing:0.08em;color:var(--white);margin-bottom:40px;}
+
+.gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.gallery-item{overflow:hidden;cursor:pointer;aspect-ratio:4/3;position:relative;}
+.gallery-item img{width:100%;height:100%;object-fit:cover;transition:transform 0.5s ease,filter 0.3s ease;filter:brightness(0.88);}
+.gallery-item:hover img{transform:scale(1.05);filter:brightness(1);}
+.gallery-item .overlay{position:absolute;inset:0;background:rgba(26,107,138,0);transition:background 0.3s;display:flex;align-items:center;justify-content:center;}
+.gallery-item:hover .overlay{background:rgba(26,107,138,0.1);}
+
+.lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.96);z-index:1000;align-items:center;justify-content:center;}
+.lightbox.open{display:flex;}
+.lightbox img{max-width:90vw;max-height:90vh;object-fit:contain;}
+.lightbox-close{position:absolute;top:24px;right:32px;font-size:28px;color:rgba(255,255,255,0.5);cursor:pointer;background:none;border:none;transition:color 0.2s;}
+.lightbox-close:hover{color:var(--white);}
+.lightbox-prev,.lightbox-next{position:absolute;top:50%;transform:translateY(-50%);font-size:32px;color:rgba(255,255,255,0.4);cursor:pointer;background:none;border:none;padding:16px;transition:color 0.2s;}
+.lightbox-prev{left:16px;}.lightbox-next{right:16px;}
+.lightbox-prev:hover,.lightbox-next:hover{color:var(--white);}
+
+.about-wrap{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;}
+.about-img{position:relative;}
+.about-img img{width:100%;aspect-ratio:4/3;object-fit:cover;object-position:center;}
+.about-img::before{content:'';position:absolute;top:-12px;left:-12px;right:12px;bottom:12px;border:1px solid var(--teal);z-index:-1;}
+.about-text p{font-family:var(--font-body);font-weight:300;font-size:15px;line-height:1.9;color:rgba(255,255,255,0.7);margin-bottom:16px;}
+.about-text strong{color:var(--light-teal);font-weight:400;}
+.about-text .section-title{margin-bottom:20px;}
+
+.contact-section{background:var(--dark);padding:80px 40px;text-align:center;}
+.contact-sub{font-family:var(--font-body);font-weight:300;font-size:15px;color:rgba(255,255,255,0.5);max-width:480px;margin:0 auto 40px;line-height:1.7;}
+.contact-form{max-width:520px;margin:0 auto;}
+.contact-form input,.contact-form textarea{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:4px;padding:14px 18px;font-family:var(--font-body);font-size:14px;color:var(--white);outline:none;margin-bottom:14px;transition:border-color 0.2s;}
+.contact-form input:focus,.contact-form textarea:focus{border-color:var(--teal);}
+.contact-form textarea{height:120px;resize:none;}
+.contact-form input::placeholder,.contact-form textarea::placeholder{color:rgba(255,255,255,0.3);}
+.submit-btn{background:var(--teal);color:var(--white);border:none;border-radius:4px;padding:14px 40px;font-family:var(--font-display);font-size:14px;letter-spacing:0.15em;text-transform:uppercase;cursor:pointer;transition:background 0.2s;width:100%;}
+.submit-btn:hover{background:var(--light-teal);}
+.form-success{display:none;color:var(--light-teal);font-family:var(--font-body);font-size:14px;margin-top:16px;}
+
+footer{background:var(--black);padding:28px 40px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(255,255,255,0.06);}
+.footer-logo img{width:36px;height:36px;border-radius:50%;object-fit:cover;opacity:0.6;}
+.footer-text{font-family:var(--font-body);font-size:12px;color:rgba(255,255,255,0.3);letter-spacing:0.08em;}
+.footer-text span{color:var(--teal);}
+.footer-link a{color:rgba(255,255,255,0.3);font-size:12px;letter-spacing:0.1em;text-decoration:none;font-family:var(--font-body);transition:color 0.2s;}
+.footer-link a:hover{color:var(--light-teal);}
+
+.mobile-menu{display:none;position:fixed;inset:0;background:rgba(8,8,8,0.98);z-index:200;flex-direction:column;align-items:center;justify-content:center;gap:32px;}
+.mobile-menu.open{display:flex;}
+.mobile-menu a{font-family:var(--font-display);font-size:22px;letter-spacing:0.2em;color:var(--white);text-decoration:none;text-transform:uppercase;transition:color 0.2s;}
+.mobile-menu a:hover{color:var(--light-teal);}
+.mobile-close{position:absolute;top:24px;right:32px;font-size:28px;color:rgba(255,255,255,0.5);cursor:pointer;background:none;border:none;}
+
+@media(max-width:768px){
+  nav{padding:16px 20px;}
+  .nav-links{display:none;}
+  .hamburger{display:flex;}
+  .gallery-grid{grid-template-columns:repeat(2,1fr);}
+  .about-wrap{grid-template-columns:1fr;gap:32px;}
+  .section{padding:60px 20px;}
+  footer{flex-direction:column;gap:12px;text-align:center;}
+}
+@media(max-width:480px){.gallery-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<div class="mobile-menu" id="mobile-menu">
+  <button class="mobile-close" onclick="toggleMenu()">&#10005;</button>
+  <a href="#home" onclick="toggleMenu()">Home</a>
+  <a href="#events" onclick="toggleMenu()">Events</a>
+  <a href="#gallery" onclick="toggleMenu()">Portfolio</a>
+  <a href="#about" onclick="toggleMenu()">About</a>
+  <a href="#contact" onclick="toggleMenu()">Contact</a>
+</div>
+
+<nav id="main-nav">
+  <div class="nav-logo">
+    <img src="images/logo.jpeg" alt="Akwaman Photography">
+  </div>
+  <ul class="nav-links">
+    <li><a href="#home">Home</a></li>
+    <li><a href="#events">Events</a></li>
+    <li><a href="#gallery">Portfolio</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<section class="hero" id="home">
+  <div class="slide" style="background-image:url('images/IMG_6597.jpg')"></div>
+  <div class="slide" style="background-image:url('images/IMG_9029.jpg')"></div>
+  <div class="slide" style="background-image:url('images/IMG_6679.jpg')"></div>
+  <div class="slide" style="background-image:url('images/IMG_6567.jpg')"></div>
+  <div class="slide" style="background-image:url('images/IMG_8434.jpg')"></div>
+  <div class="hero-text">
+    <h1>Akwaman Photography</h1>
+    <p>Philadelphia Region &nbsp;&middot;&nbsp; Events &nbsp;&middot;&nbsp; Weddings &nbsp;&middot;&nbsp; Life</p>
+  </div>
+  <div class="slide-dots" id="dots"></div>
+</section>
+
+<div id="events">
+<div class="section">
+  <p class="section-label">Celebrations &amp; Milestones</p>
+  <h2 class="section-title">Events</h2>
+  <div class="gallery-grid">
+    <div class="gallery-item" onclick="openLightbox(0,'events')"><img src="images/IMG_9029.jpg" loading="lazy" alt="Wedding party"><div class="overlay"></div></div>
+    <div class="gallery-item" onclick="openLightbox(1,'events')"><img src="images/IMG_8996.jpg" loading="lazy" alt="Wedding couple"><div class="overlay"></div></div>
+    <div class="gallery-item" onclick="openLightbox(2,'events')"><img src="images/IMG_8621.jpg" loading="lazy" alt="Baby shower"><div class="overlay"></div></div>
+  </div>
+</div></div>
+
+<div id="gallery" style="background:var(--dark);padding:1px 0;">
+<div class="section">
+  <p class="section-label">A Wider Lens</p>
+  <h2 class="section-title">Portfolio</h2>
+  <div class="gallery-grid">
+    <div class="gallery-item" onclick="openLightbox(0,'portfolio')"><img src="images/IMG_6679.jpg" loading="lazy" alt="The Future on Forsyth"><div class="overlay"></div></div>
+    <div class="gallery-item" onclick="openLightbox(1,'portfolio')"><img src="images/IMG_6597.jpg" loading="lazy" alt="OOCL Atlanta"><div class="overlay"></div></div>
+    <div class="gallery-item" onclick="openLightbox(2,'portfolio')"><img src="images/IMG_6567.jpg" loading="lazy" alt="Georgia Queen Savannah"><div class="overlay"></div></div>
+    <div class="gallery-item" onclick="openLightbox(3,'portfolio')"><img src="images/IMG_7082.jpg" loading="lazy" alt="Macro bee"><div class="overlay"></div></div>
+    <div class="gallery-item" onclick="openLightbox(4,'portfolio')"><img src="images/IMG_6843.jpg" loading="lazy" alt="Pink lantern"><div class="overlay"></div></div>
+    <div class="gallery-item" onclick="openLightbox(5,'portfolio')"><img src="images/IMG_6617.jpg" loading="lazy" alt="Seagull over Savannah River"><div class="overlay"></div></div>
+  </div>
+</div></div>
+
+<div id="about">
+<div class="section">
+  <div class="about-wrap">
+    <div class="about-img">
+      <img src="images/IMG_8434.jpg" loading="lazy" alt="Akwaman behind the lens">
+    </div>
+    <div class="about-text">
+      <p class="section-label">The photographer</p>
+      <h2 class="section-title">Behind the Lens</h2>
+      <p>I'm Rich — known as <strong>Akwaman</strong> since high school, when a teacher heard my last name and the whole class lit up. That story of something unexpected becoming something lasting is exactly how I'd describe my relationship with photography.</p>
+      <p>I shoot <strong>weddings, events, sports, and life</strong> — the planned and the spontaneous. Based in Drexel Hill, PA, I've taken my camera everywhere from the waterfront of Savannah to the wrestling mats of Delaware County.</p>
+      <p>Every shot is a chance to freeze something real. I take that seriously — and I have a lot of fun doing it.</p>
+    </div>
+  </div>
+</div></div>
+
+<div class="contact-section" id="contact">
+  <p class="section-label">Let's work together</p>
+  <h2 class="section-title">Book a Session</h2>
+  <p class="contact-sub">Weddings, events, sports, or something else entirely — reach out and let's talk about your vision.</p>
+  <div class="contact-form">
+    <input type="text" id="cf-name" placeholder="Your name">
+    <input type="email" id="cf-email" placeholder="Your email">
+    <input type="text" id="cf-event" placeholder="Type of session (wedding, event, sports...)">
+    <textarea id="cf-message" placeholder="Tell me about your event or session"></textarea>
+    <button class="submit-btn" onclick="submitForm()">Send Inquiry &rarr;</button>
+    <div class="form-success" id="form-success">&#10003; Message received — Rich will be in touch within 24 hours.</div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo">
+    <img src="images/logo.jpeg" alt="Akwaman Photography">
+  </div>
+  <div class="footer-text">&copy; 2026 <span>Akwaman Photography</span> &nbsp;&middot;&nbsp; Drexel Hill, PA</div>
+  <div class="footer-link"><a href="https://akwaman.net" target="_blank">akwaman.net</a></div>
+</footer>
+
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" onclick="closeLightbox()">&#10005;</button>
+  <button class="lightbox-prev" onclick="moveLightbox(-1)">&#8592;</button>
+  <img id="lightbox-img" src="" alt="">
+  <button class="lightbox-next" onclick="moveLightbox(1)">&#8594;</button>
+</div>
+
+<script>
+// SLIDESHOW
+const slides = document.querySelectorAll('.slide');
+const dotsWrap = document.getElementById('dots');
+let current = 0, timer;
+slides[0].classList.add('active');
+slides.forEach((_,i) => {
+  const d = document.createElement('div');
+  d.className = 'dot' + (i===0?' active':'');
+  d.onclick = () => goTo(i);
+  dotsWrap.appendChild(d);
+});
+function goTo(n) {
+  slides[current].classList.remove('active');
+  dotsWrap.children[current].classList.remove('active');
+  current = (n + slides.length) % slides.length;
+  slides[current].classList.add('active');
+  dotsWrap.children[current].classList.add('active');
+  clearInterval(timer);
+  timer = setInterval(() => goTo(current+1), 6000);
+}
+timer = setInterval(() => goTo(current+1), 6000);
+
+// NAV
+window.addEventListener('scroll', () => {
+  document.getElementById('main-nav').classList.toggle('scrolled', window.scrollY > 60);
+});
+
+// MOBILE
+function toggleMenu() { document.getElementById('mobile-menu').classList.toggle('open'); }
+
+// LIGHTBOX
+const galleries = {
+  events: [
+    'images/IMG_9029.jpg',
+    'images/IMG_8996.jpg',
+    'images/IMG_8621.jpg'
+  ],
+  portfolio: [
+    'images/IMG_6679.jpg',
+    'images/IMG_6597.jpg',
+    'images/IMG_6567.jpg',
+    'images/IMG_7082.jpg',
+    'images/IMG_6843.jpg',
+    'images/IMG_6617.jpg'
+  ]
+};
+let lbGallery=[], lbIndex=0;
+function openLightbox(idx, gallery) {
+  lbGallery = galleries[gallery];
+  lbIndex = idx;
+  document.getElementById('lightbox-img').src = lbGallery[idx];
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow='';
+}
+function moveLightbox(dir) {
+  lbIndex = (lbIndex+dir+lbGallery.length)%lbGallery.length;
+  document.getElementById('lightbox-img').src = lbGallery[lbIndex];
+}
+document.getElementById('lightbox').addEventListener('click', function(e){ if(e.target===this) closeLightbox(); });
+document.addEventListener('keydown', e => {
+  if(e.key==='Escape') closeLightbox();
+  if(e.key==='ArrowLeft') moveLightbox(-1);
+  if(e.key==='ArrowRight') moveLightbox(1);
+});
+
+// CONTACT
+function submitForm() {
+  const name=document.getElementById('cf-name').value.trim();
+  const email=document.getElementById('cf-email').value.trim();
+  const event=document.getElementById('cf-event').value.trim();
+  const message=document.getElementById('cf-message').value.trim();
+  if(!name||!email) return;
+  fetch('https://formspree.io/f/xvzvlyzr',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Accept':'application/json'},
+    body:JSON.stringify({name,email,session_type:event,message,_subject:'📷 Photography inquiry from '+name})
+  }).then(r=>{
+    if(r.ok){
+      ['cf-name','cf-email','cf-event','cf-message'].forEach(id=>document.getElementById(id).value='');
+      document.getElementById('form-success').style.display='block';
+    }
+  }).catch(err=>console.log(err));
+}
+</script>
+</body>
+</html>
